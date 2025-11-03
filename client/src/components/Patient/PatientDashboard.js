@@ -50,12 +50,19 @@ function PatientDashboard() {
         // Process appointments to get stats
         const appointments = response.data;
         const now = new Date();
+        
         const stats = {
           totalAppointments: appointments.length,
-          upcomingAppointments: appointments.filter(apt => 
-            new Date(apt.date) > now && 
-            (apt.status === 'booked' || apt.status === 'pending')
-          ).length,
+          upcomingAppointments: appointments.filter(apt => {
+            try {
+              const aptDate = new Date(apt.date);
+              return aptDate > now && 
+                (apt.status === 'booked' || apt.status === 'pending');
+            } catch (error) {
+              console.error('Error processing appointment date:', error);
+              return false;
+            }
+          }).length,
           completedAppointments: appointments.filter(apt => apt.status === 'completed').length,
           pendingBills: appointments.filter(apt => apt.status === 'completed' && !apt.paid).length || 0
         };

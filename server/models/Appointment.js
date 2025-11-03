@@ -30,17 +30,32 @@ const Appointment = sequelize.define('Appointment', {
     allowNull: false,
     get() {
       const value = this.getDataValue('date');
-      if (value) {
-        return new Date(value.getTime() - value.getTimezoneOffset() * 60000);
+      if (!value) return null;
+      try {
+        // Handle both Date objects and date strings
+        const date = value instanceof Date ? value : new Date(value);
+        if (isNaN(date.getTime())) return null;
+        return date;
+      } catch (error) {
+        console.error('Error in date getter:', error);
+        return null;
       }
-      return value;
     },
     set(value) {
-      if (value) {
-        const date = new Date(value);
-        this.setDataValue('date', new Date(date.getTime() + date.getTimezoneOffset() * 60000));
-      } else {
-        this.setDataValue('date', value);
+      if (!value) {
+        this.setDataValue('date', null);
+        return;
+      }
+      try {
+        const date = value instanceof Date ? value : new Date(value);
+        if (isNaN(date.getTime())) {
+          this.setDataValue('date', null);
+          return;
+        }
+        this.setDataValue('date', date);
+      } catch (error) {
+        console.error('Error in date setter:', error);
+        this.setDataValue('date', null);
       }
     }
   },
@@ -84,3 +99,11 @@ Appointment.belongsTo(User, { as: 'patient', foreignKey: 'patientId' });
 Appointment.belongsTo(User, { as: 'doctor', foreignKey: 'doctorId' });
 
 module.exports = Appointment;
+
+
+
+
+
+
+
+
