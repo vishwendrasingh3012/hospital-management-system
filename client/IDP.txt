@@ -1,0 +1,15 @@
+"Admin"
+Admin
+Admin@123
+
+
+
+"Doctor"
+Doc1
+Doc@123
+
+
+
+"Patient"
+Vaibhav01
+Admin@123
